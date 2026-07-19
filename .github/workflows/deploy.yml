@@ -1,0 +1,48 @@
+name: Deploy Spring Boot Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'termurin'
+          java-version: '21'
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/expense-tracker:latest .
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/expense-tracker:latest
+
+      - name: Deploy to EC2 instance
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/expense-tracker:latest
+            docker stop expense-tracker || true
+            docker rm expense-tracker || true
+            docker run -d --name expense-tracker -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/expense-tracker:latest
