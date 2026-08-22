@@ -29,7 +29,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
             if (userRepo.findByEmail("admin@example.com").isEmpty()) {
-                User u = new User("admin@example.com", hash("admin123"));
+                User u = new User("admin", "admin@example.com", hash("admin123"));
             userRepo.save(u);
         }
     }

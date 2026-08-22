@@ -40,6 +40,7 @@ public class AuthController {
     }
 
     public static class RegisterRequest {
+        public String username;
         public String email;
         public String password;
 
@@ -67,12 +68,13 @@ public class AuthController {
         HashMap<String, Object> resp = new HashMap<>();
         resp.put("message", "login Success");
         resp.put("expiry", expiry.toString());
+        resp.put("username", user.getUsername());
         return ResponseEntity.ok(resp);
     }
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@RequestBody RegisterRequest req) {
-        if (req == null || req.email == null || req.password == null) {
+        if (req == null || req.email == null || req.password == null || req.username == null) {
             return ResponseEntity.badRequest().body("Missing fields");
         }
 
@@ -81,7 +83,7 @@ public class AuthController {
         }
 
         String hashed = hash(req.password);
-        User u = new User(req.email, hashed);
+        User u = new User(req.username, req.email, hashed);
         userRepo.save(u);
 
         return ResponseEntity.ok("Registration Success");
