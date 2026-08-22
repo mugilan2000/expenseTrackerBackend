@@ -32,20 +32,28 @@ public class AuthController {
     }
 
     public static class LoginRequest {
-        public String username;
+        public String email;
         public String password;
 
         public LoginRequest() {
         }
     }
 
+    public static class RegisterRequest {
+        public String email;
+        public String password;
+
+        public RegisterRequest() {
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody LoginRequest req) {
-        if (req == null || req.username == null || req.password == null) {
+        if (req == null || req.email == null || req.password == null) {
             return ResponseEntity.badRequest().body("Missing credentials");
         }
 
-        var userOpt = userRepo.findByUsername(req.username);
+        var userOpt = userRepo.findByEmail(req.email);
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
@@ -60,5 +68,22 @@ public class AuthController {
         resp.put("message", "login Success");
         resp.put("expiry", expiry.toString());
         return ResponseEntity.ok(resp);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Object> register(@RequestBody RegisterRequest req) {
+        if (req == null || req.email == null || req.password == null) {
+            return ResponseEntity.badRequest().body("Missing fields");
+        }
+
+        if (userRepo.findByEmail(req.email).isPresent()) {
+            return ResponseEntity.status(409).body("Email already registered");
+        }
+
+        String hashed = hash(req.password);
+        User u = new User(req.email, hashed);
+        userRepo.save(u);
+
+        return ResponseEntity.ok("Registration Success");
     }
 }
