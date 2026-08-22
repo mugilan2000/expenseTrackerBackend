@@ -16,6 +16,7 @@ public class Expense {
     private String expDate;
     private String payment;
     private String type;
+    private Long userId;
 
     public int getId() {
         return id;
@@ -71,5 +72,13 @@ public class Expense {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

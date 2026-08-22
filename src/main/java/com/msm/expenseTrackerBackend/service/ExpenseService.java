@@ -19,6 +19,11 @@ public class ExpenseService {
         return ResponseEntity.ok(expenseRepo.findAll());
     }
 
+    public ResponseEntity<Object> getExpensesByUserId(Long userId) {
+        List<Expense> expenses = expenseRepo.findByUserId(userId);
+        return ResponseEntity.ok(expenses);
+    }
+
     public ResponseEntity<Object> getExpenseById(int id) {
         Optional<Expense> expense = expenseRepo.findById(id);
         if (expense.isPresent()) {

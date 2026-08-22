@@ -19,6 +19,11 @@ public class ExpenseController {
         return expenseService.getAllExpenses();
     }
 
+    @GetMapping("/expenses/user/{userId}")
+    public ResponseEntity<Object> getExpensesByUserId(@PathVariable Long userId) {
+        return expenseService.getExpensesByUserId(userId);
+    }
+
     @GetMapping("/expenses/{id}")
     public ResponseEntity<Object> getExpenseById(@PathVariable int id) {
         return expenseService.getExpenseById(id);
