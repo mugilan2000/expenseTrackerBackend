@@ -2,6 +2,7 @@ package com.msm.expenseTrackerBackend.controller;
 
 import com.msm.expenseTrackerBackend.model.User;
 import com.msm.expenseTrackerBackend.repo.UserRepo;
+import com.msm.expenseTrackerBackend.util.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ public class AuthController {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     private String hash(String input) {
         try {
@@ -65,10 +69,13 @@ public class AuthController {
         }
 
         Instant expiry = Instant.now().plus(7, ChronoUnit.DAYS);
+        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail());
         HashMap<String, Object> resp = new HashMap<>();
         resp.put("message", "login Success");
+        resp.put("token", token);
         resp.put("expiry", expiry.toString());
         resp.put("username", user.getUsername());
+        resp.put("userId", user.getId());
         return ResponseEntity.ok(resp);
     }
 
