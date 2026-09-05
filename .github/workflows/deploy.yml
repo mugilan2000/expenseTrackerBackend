@@ -1,4 +1,5 @@
 name: Deploy Spring Boot Application
+run-name: Production Deployment "${{ github.ref_name }}" by @${{ github.actor }}
 
 on:
   push:
@@ -45,4 +46,4 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/expense-tracker:latest
             docker stop expense-tracker || true
             docker rm expense-tracker || true
-            docker run -d --name expense-tracker -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/expense-tracker:latest
+            docker run -d --name expense-tracker -p 8080:8080 -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" ${{ secrets.DOCKER_USERNAME }}/expense-tracker:latest
