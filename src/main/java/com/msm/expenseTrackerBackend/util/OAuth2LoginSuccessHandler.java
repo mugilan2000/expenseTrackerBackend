@@ -49,6 +49,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         );
 
         String platform = request.getParameter("platform");
+        System.out.println("Platform: " + platform);
 
         String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail());
 
