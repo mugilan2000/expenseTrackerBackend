@@ -48,13 +48,16 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                         + user.getEmail()
         );
 
-        String platform = request.getParameter("platform");
+        String platform =
+                (String) request.getSession()
+                        .getAttribute("oauth_platform");
         System.out.println("Platform: " + platform);
 
         String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail());
 
         if ("android".equals(platform)) {
 
+            request.getSession().removeAttribute("oauth_platform");
             response.sendRedirect(
                     "com.exptracker.app://oauth2redirect"
                             + "?token=" + token  + "&username=" + user.getUsername()
