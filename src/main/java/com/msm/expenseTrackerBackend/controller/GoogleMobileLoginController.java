@@ -13,6 +13,7 @@ public class GoogleMobileLoginController  {
             HttpSession session,
             HttpServletResponse response) throws IOException {
 
+        System.out.println("Android Google login started");
         session.setAttribute("oauth_platform", "android");
 
         response.sendRedirect("/oauth2/authorization/google");
